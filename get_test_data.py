@@ -13,12 +13,18 @@ def main():
 
     rq_data = cute_utils.fetch_data(series, run)
     det_trig = rq_data['Events']['Trigger'][det]
+    ran_trig = rq_data['Events']['Trigger']['Random']['InRun']
     in_range = (rq_data['Det'][det]['OFamp']*1e6>1)&(rq_data['Det'][det]['OFamp']*1e6<2)
-    events_oi = rq_data['Events']['EventNum'][det_trig&in_range]
+    det_events = rq_data['Events']['EventNum'][det_trig&in_range]
+    noise_events = rq_data['Events']['EventNum'][ran_trig]
 
-    test_data = RQ_cruncher.pull_data( series, run, det, events_oi[:100] )
-    with open('test_data.p', 'wb') as f:
-        pickle.dump(test_data, f)
+    test_data_det = RQ_cruncher.pull_data( series, run, det, det_events[:100] )
+    test_data_ran = RQ_cruncher.pull_data( series, run, det, noise_events[:100] )
+    
+    with open('test_data_det.p', 'wb') as f:
+        pickle.dump(test_data_det, f)
+    with open('test_data_ran.p', 'wb') as f:
+        pickle.dump(test_data_ran, f)
 
     return
 
